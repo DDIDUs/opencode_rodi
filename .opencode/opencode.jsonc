@@ -1,6 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "provider": {},
+  "agent": {
+    "build": {
+      "permission": {
+        "search_rag": "deny",
+      },
+    },
+  },
   "permission": {},
   "mcp": {},
   "tools": {
