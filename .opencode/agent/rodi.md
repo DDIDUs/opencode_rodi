@@ -1,5 +1,5 @@
 ---
-description: Use this agent when the user asks to generate, verify, or modify Rodi Script code, Rodi robot motion, Rodi API usage, IO control, socket/entity handling, natural-language-to-Rodi-code conversion, or Korean robot-code requests mentioning 포즈, 관절, 이동, 왕복, 일반 디지털 입력/출력, 툴 디지털 출력, 반복, 조건, or 나중에 설정.
+description: Delegate to this agent whenever the user's intent is to produce, transform, verify, or reason about Rodi Script or Rodi robot-controller behavior — including robot motion (poses, joints, linear/arc/circle moves, jog), IO control, sockets and entities, conditional or repeated robot actions, and natural-language descriptions of robot behavior with placeholder coordinates to be filled later. Route by intent, not by surface keywords or input language; Korean, English, and other languages are all in scope.
 mode: subagent
 temperature: 0.1
 steps: 8

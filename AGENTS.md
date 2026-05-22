@@ -3,7 +3,7 @@
 - The default branch in this repo is `dev`.
 - Local `main` ref may not exist; use `dev` or `origin/dev` for diffs.
 - Prefer automation: execute requested actions without confirmation unless blocked by missing info or safety/irreversibility.
-- For Rodi Script generation, Rodi API usage, robot motion, IO control, socket/entity handling, or natural-language-to-Rodi-code requests, delegate to the `rodi` subagent before giving the final answer. Do not use WebFetch, WebSearch, or `search_rag` directly for Rodi requests from the main agent.
+- If the user's intent is to generate, transform, verify, or reason about Rodi Script or Rodi robot-controller behavior — robot motion, IO control, sockets/entities, repeated/conditional robot actions, or natural-language descriptions of robot behavior — delegate to the `rodi` subagent before giving the final answer. Classify by intent, not by keyword or language. Do not call WebFetch, WebSearch, or `search_rag` directly from the main agent for Rodi requests.
 
 ## Commits and PR Titles
 

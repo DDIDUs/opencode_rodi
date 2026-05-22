@@ -1,14 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "provider": {},
-  "agent": {
-    "build": {
-      "permission": {
-        "search_rag": "deny",
-      },
-    },
+  "agent": {},
+  "permission": {
+    // Deny search_rag globally; the rodi subagent overrides this to `allow`
+    // in its frontmatter, so only rodi can query the Rodi RAG endpoint.
+    "search_rag": "deny",
   },
-  "permission": {},
   "mcp": {},
   "tools": {
     "github-triage": false,
