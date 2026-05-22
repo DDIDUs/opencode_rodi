@@ -1,10 +1,26 @@
 /// <reference path="../env.d.ts" />
 import { tool } from "@opencode-ai/plugin"
 
-const RODI_RAG_URL = process.env["RODI_RAG_URL"] ?? "http://129.254.222.37:10001/api/search/dense"
-const REQUEST_TIMEOUT_MS = Number(process.env["RODI_RAG_TIMEOUT_MS"] ?? 15_000)
+const RODI_RAG_URL = Bun.env["RODI_RAG_URL"] ?? "http://129.254.222.37:10001/api/search/dense"
+const REQUEST_TIMEOUT_MS = Number(Bun.env["RODI_RAG_TIMEOUT_MS"] ?? 15_000)
 const CACHE_MAX = 200
 const cache = new Map<string, unknown>()
+
+// Fields that bloat the LLM context with no signal for code generation.
+const HEAVY_FIELDS = new Set(["embedding", "embeddings", "vector", "vectors", "_embedding", "_vector"])
+
+function trim(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(trim)
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (HEAVY_FIELDS.has(k)) continue
+      out[k] = trim(v)
+    }
+    return out
+  }
+  return value
+}
 
 export default tool({
   description: `Search Rodi Script API documentation using dense RAG.
@@ -12,7 +28,7 @@ export default tool({
 Use this tool to verify exact Rodi API names, parameter order, option objects, event names, helper functions, return values, and examples before generating or reviewing Rodi Script code.`,
   args: {
     query: tool.schema.string().describe("Focused natural language query for Rodi Script API documentation"),
-    limit: tool.schema.number().int().min(1).max(10).describe("Maximum number of search results to return").default(3),
+    limit: tool.schema.number().int().min(1).max(5).describe("Maximum number of search results to return (keep low; 3 is usually enough)").default(3),
   },
   async execute(args, ctx) {
     await ctx.ask({
@@ -52,7 +68,7 @@ Use this tool to verify exact Rodi API names, parameter order, option objects, e
       throw new Error(`Rodi RAG request failed: ${response.status} ${response.statusText}${detail}`)
     }
 
-    const result = await response.json()
+    const result = trim(await response.json())
     if (cache.size >= CACHE_MAX) {
       const oldest = cache.keys().next().value
       if (oldest !== undefined) cache.delete(oldest)
