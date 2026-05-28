@@ -81,7 +81,7 @@ The following domain rules are adapted directly from `mod_rodi/rodi_agent/prompt
   - Use `jogInching` ONLY for translational movement (mm). Use `jogInchingOrientation` ONLY for rotational movement (degrees). Do not confuse the two.
 - All motion commands except joint moves, when specifying motion parameters, must explicitly include velocity and acceleration parameters.
 - For `createDirection`, pass exactly three positional numeric arguments (`x`, `y`, `z`), not an object.
-- When waiting for asynchronous motions to end, always use the explicit `waitForMoveEnd(COMMAND_ID)` API, not undocumented wait functions.
+- Use `waitForMoveEnd(COMMAND_ID)` only when the user explicitly requests waiting for an asynchronous motion to complete. Never use undocumented wait functions.
 - You should not provide velocity and acceleration parameters to moveJoint
 
 ## IO Rules
@@ -104,8 +104,8 @@ The following domain rules are adapted directly from `mod_rodi/rodi_agent/prompt
   - **Execute EXACTLY the specified number of times.** Do not omit the loop (running only once) or use `while(true)` (infinite loop) unless explicitly requested.
   - **Do NOT duplicate actions inside the loop.** If an action is supposed to happen once per iteration, do not write it twice.
 - For a fixed time delay in milliseconds, use `sleep(ms)`, not `wait(ms)`.
-- **Asynchronous Move Waiting**: When generating asynchronous movements (e.g., `{async_mode: true}` option passed to `moveLinear` or `moveJoint`), capture the returned command ID in a variable and immediately wait for it using `waitForMoveEnd(COMMAND_ID)`.
-  - Example: `var COMMAND_ID=moveJoint(TARGET_JOINT_6,undefined,undefined,{async_mode:true}); waitForMoveEnd(COMMAND_ID);`
+- **Asynchronous Move Waiting**: Use waitForMoveEnd(COMMAND_ID) only when the user explicitly instructs the robot to complete the movement and wait. When generating asynchronous movements, such as passing {async_mode: true} to moveLinear or moveJoint, capture the returned command ID in a variable so it can be used later if waiting is required.
+  - Example: `var COMMAND_ID=moveJoint(TARGET_JOINT_6,{async_mode:true}); waitForMoveEnd(COMMAND_ID);`
 - **Wait vs Check**: Use `wait(condition)` ONLY when the instruction requires *blocking/waiting* until a condition becomes true. If the instruction only asks to *check* the condition once, use an `if(condition)` statement. Do not use blocking waits for simple checks.
 - If the request mentions a time delay, pause, sleep, or waiting for a fixed duration, verify the delay API with `search_rag` before generating final code unless it was already verified in the current turn.
 - **Coordinate Calculation & Off-by-one errors**: When calculating pose offsets in a loop, strictly ensure your start value and step increments match the requirement. Start your index appropriately (e.g. `i=0` to include the base pose, or `i=1` if the first offset is step 1) to ensure correct sequence targets. Avoid off-by-one errors.
