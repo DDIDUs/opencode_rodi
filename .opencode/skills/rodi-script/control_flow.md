@@ -1,0 +1,21 @@
+# Control Flow and Conditional Execution Rules
+
+- Use `for` loops with a specific `COUNT` when executing sequences multiple times.
+  - **Declare loop indices and all variables using `var`** (e.g. `for(var i=0;i<COUNT;i++)`), NOT `let` or `const`.
+  - **Execute EXACTLY the specified number of times.** Do not omit the loop (running only once) or use `while(true)` (infinite loop) unless explicitly requested.
+  - **Do NOT duplicate actions inside the loop.** If an action is supposed to happen once per iteration, do not write it twice.
+- For a fixed time delay in milliseconds, use `sleep(ms)`, not `wait(ms)`.
+- **Asynchronous Move Waiting**: Use waitForMoveEnd(COMMAND_ID) only when the user explicitly instructs the robot to complete the movement and wait. When generating asynchronous movements, such as passing {async_mode: true} to moveLinear or moveJoint, capture the returned command ID in a variable so it can be used later if waiting is required.
+  - Example: `var COMMAND_ID=moveJoint(TARGET_JOINT_6,{async_mode:true}); waitForMoveEnd(COMMAND_ID);`
+- **Wait vs Check**: Use `wait(condition)` ONLY when the instruction requires *blocking/waiting* until a condition becomes true. If the instruction only asks to *check* the condition once, use an `if(condition)` statement. Do not use blocking waits for simple checks.
+- If the request mentions a time delay, pause, sleep, or waiting for a fixed duration, verify the delay API with `search_rag` before generating final code unless it was already verified in the current turn.
+- **Coordinate Calculation & Off-by-one errors**: When calculating pose offsets in a loop, strictly ensure your start value and step increments match the requirement. Start your index appropriately (e.g. `i=0` to include the base pose, or `i=1` if the first offset is step 1) to ensure correct sequence targets. Avoid off-by-one errors.
+- Preserve the exact conditional logic from the instruction.
+- Do not unconditionally execute commands that should be guarded by sensor inputs, e.g. `getGeneralDigitalInput(0) == 1`.
+- Determine the execution paradigm:
+  - Synchronous: e.g. "Do X", "Move to Y". Use standard sequential APIs.
+  - Event-driven or conditional: e.g. "When X connects", "On data received", "Only when start condition is satisfied".
+- Before defaulting to Event Listener/Wait APIs, check if the desired action API natively accepts a condition like `start_condition` in `opts`.
+- If a target action API supports a native conditional option, use the action API directly with that option.
+- Only use Event Listeners or WaitNodes if no such parameter exists in the target action API.
+- Do not create WaitNodes or Event Listeners if the target Action API already supports conditional execution natively.

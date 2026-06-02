@@ -6,6 +6,12 @@
     // Deny search_rag globally; the rodi subagent overrides this to `allow`
     // in its frontmatter, so only rodi can query the Rodi RAG endpoint.
     "search_rag": "deny",
+    // Deny the rodi-script domain skill globally; the rodi subagent overrides
+    // this to `allow` in its frontmatter, so only rodi sees/loads it. Other
+    // skills (effect, improve-codebase-architecture, ...) stay available by default.
+    "skill": {
+      "rodi-script": "deny",
+    },
   },
   "mcp": {},
   "tools": {
